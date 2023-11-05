@@ -9,11 +9,13 @@
 </head>
 
 <body>
-    <!-- <h1>Weather in {{ city }}</h1>
-    <img src="{{ icon }}" alt="Weather Icon">
-    <p>Temperature: {{ temperature }}°C</p>
-    <p>Condition: {{ condition }}</p> -->
-
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <form method="post" action="{% url 'weather' %}">
         {% csrf_token %}
         <input type="text" name="city" placeholder="Enter city name" required>

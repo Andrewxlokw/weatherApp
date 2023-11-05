@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 import json
-
+from django.contrib import messages
 
 
 # Create your views here.
@@ -26,25 +26,31 @@ def weather(request):
     # Hardcoded for testing purposes
     city = "London"  
     unit = "c"  # 'c' for Celsius, 'f' for Fahrenheit
-
+    weather_data={}
     if request.method == 'POST':
         city = request.POST.get('city', city)
         unit = request.POST.get('unit', unit)
 
     final_url = f"{base_url}?key={api_key}&q={city}"
 
-    response = requests.get(final_url)
-    data = response.json()
 
-    temperature = data["current"]["temp_c"] if unit == 'c' else data["current"]["temp_f"]
+    try:
+        response = requests.get(final_url)
+        response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        data = response.json()
 
-    weather_data = {
-        "city": city,
-        "temperature": temperature,
-        "condition": data["current"]["condition"]["text"],
-        "icon": data["current"]["condition"]["icon"],
-        "unit": unit,
-    }
+        temperature = data["current"]["temp_c"] if unit == 'c' else data["current"]["temp_f"]
+
+        weather_data = {
+            "city": city,
+            "temperature": temperature,
+            "condition": data["current"]["condition"]["text"],
+            "icon": data["current"]["condition"]["icon"],
+            "unit": unit,
+        }
+    except requests.exceptions.HTTPError as e:
+        # If the city is not found or any other HTTP error occurred, inform the user.
+        messages.error(request, "Failed to retrieve weather data. Please try a different city.")
 
     return render(request, "weather.html", weather_data)
 
