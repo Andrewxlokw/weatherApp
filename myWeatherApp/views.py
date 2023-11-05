@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 import requests
 from django.http import JsonResponse, HttpResponse
 
-from .models import WeatherActivity
+from .models import WeatherActivity, UserPreference
 
 from utils import SEVERE_WEATHER_CODES
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views import generic
 import json
@@ -27,12 +28,12 @@ def weather(request):
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     print("running weather")
     # Hardcoded for testing purposes
-    # if request.user.is_authenticated:
-    #     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-    #     city_name = user_profile.preferred_city or "London"
-    # else:
-    #     city_name = "London"
-    city_name = "London"  
+    if request.user.is_authenticated:
+        user_profile, created = UserPreference.objects.get_or_create(user=request.user)
+        city_name = user_profile.preferred_city or "Shanghai"
+    else:
+        city_name = "Beijing"
+    # city_name = "London"  
 
     unit = "metric"  # 'c' for Celsius, 'f' for Fahrenheit
     weather_info={}
@@ -134,3 +135,13 @@ def get_activity_recommendation(request, weather_code):
     # Serialize the data and create an HttpResponse object
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type='application/json')
+
+@login_required
+def set_preferred_city(request):
+    if request.method == 'POST':
+        preferred_city = request.POST.get('preferred_city')
+        user_profile, created = UserPreference.objects.get_or_create(user=request.user)
+        user_profile.preferred_city = preferred_city
+        user_profile.save()
+        messages.success(request, "Preferred city updated.")
+    return redirect('weather')  # Replace with the name of your profile page's URL

@@ -12,4 +12,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('get_activity_recommendation/<str:weather_code>/', views.get_activity_recommendation, name='get_activity_recommendation'),
+    path('set_preferred_city/', views.set_preferred_city, name='set_preferred_city'),
+
 ]

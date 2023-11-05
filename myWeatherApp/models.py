@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -33,3 +34,14 @@ class WeatherActivity(models.Model):
         # # Return a string representation of the model.
         # group_display = dict(WEATHER_CONDITION_GROUP_CODE).get(self.condition_group, "Unknown")
         # return f"{group_display} - {self.activity_recommendation}"
+
+# models.py
+
+
+
+class UserPreference(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    preferred_city = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.user.username

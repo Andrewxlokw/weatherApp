@@ -45,7 +45,7 @@
         <!-- Inside the user profile section -->
         <form method="post" action="{% url 'set_preferred_city' %}">
             {% csrf_token %}
-            <input type="text" name="preferred_city" placeholder="Set your preferred city" value="{{ user.userprofile.preferred_city }}">
+            <input type="text" name="preferred_city" placeholder="Set your preferred city" value="{{ user.userpreference.preferred_city }}">
             <button type="submit">Save Preferred City</button>
         </form>
     {% else %}
