@@ -1,15 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather</title>
 </head>
+
 <body>
-    <h1>Weather in {{ city }}</h1>
+    <!-- <h1>Weather in {{ city }}</h1>
     <img src="{{ icon }}" alt="Weather Icon">
     <p>Temperature: {{ temperature }}°C</p>
-    <p>Condition: {{ condition }}</p>
+    <p>Condition: {{ condition }}</p> -->
+
+    <form method="post" action="{% url 'weather' %}">
+        {% csrf_token %}
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <input type="radio" name="unit" value="c" checked> Celsius
+        <input type="radio" name="unit" value="f"> Fahrenheit
+        <button type="submit">Get Weather</button>
+    </form>
+    
+    <!-- Display weather data -->
+    <div>
+        <h1>Weather in {{ city }}</h1>
+        <p>Temperature: {{ temperature }} °{{ unit|upper }}</p>
+        <p>Condition: {{ condition }}</p>
+        <img src="{{ icon }}" alt="weather icon">
+    </div>
+
+    <script>
+
+        window.onload = function () {
+            if (confirm("Do you want to share your IP address with us to detect your city?")) {
+                fetch('/location/')
+                    .then(response => response.http())
+                    .then(data => {
+                        let city = data.city;
+                        alert(`You are accessing from: ${city}`);
+                    });
+            }
+        }
+
+    </script>
 </body>
+
 </html>
