@@ -19,31 +19,39 @@
     <form method="post" action="{% url 'weather' %}">
         {% csrf_token %}
         <input type="text" name="city" placeholder="Enter city name" required>
-        <input type="radio" name="unit" value="c" checked> Celsius
-        <input type="radio" name="unit" value="f"> Fahrenheit
+        <input type="radio" name="unit" value="metric" checked> Celsius
+        <input type="radio" name="unit" value="imperial"> Fahrenheit
         <button type="submit">Get Weather</button>
     </form>
     
-    <!-- Display weather data -->
-    <div>
-        <h1>Weather in {{ city }}</h1>
-        <p>Temperature: {{ temperature }} °{{ unit|upper }}</p>
-        <p>Condition: {{ condition }}</p>
-        <img src="{{ icon }}" alt="weather icon">
-    </div>
+    {% if weather_info %}
+        <!-- Display weather data -->
+        <div>
+            <h1>Weather in {{ weather_info.city }}</h1>
+            {% if weather_info.error %}
+                <p>{{ weather_info.error }}</p>
+            {% else %}
+                <p>Temperature: {{ weather_info.temperature }}{% if unit == 'metric' %}°C{% else %}°F{% endif %}</p>
+                <p>Condition: {{ weather_info.condition }}</p>
+                <img src="http://openweathermap.org/img/wn/{{ weather_info.icon }}.png" alt="weather icon">
+                <p>Condition ID: {{ weather_info.condition_id }}</p>
+                <p>Humidity: {{ weather_info.humidity }}%</p>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <script>
 
-        window.onload = function () {
-            if (confirm("Do you want to share your IP address with us to detect your city?")) {
-                fetch('/location/')
-                    .then(response => response.http())
-                    .then(data => {
-                        let city = data.city;
-                        alert(`You are accessing from: ${city}`);
-                    });
-            }
-        }
+        // window.onload = function () {
+        //     if (confirm("Do you want to share your IP address with us to detect your city?")) {
+        //         fetch('/location/')
+        //             .then(response => response.http())
+        //             .then(data => {
+        //                 let city = data.city;
+        //                 alert(`You are accessing from: ${city}`);
+        //             });
+        //     }
+        // }
 
     </script>
 </body>

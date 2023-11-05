@@ -20,40 +20,107 @@ def index(request):
 
 
 def weather(request):
-    api_key = "21ce77d1d073431c87f181124232710"
-    base_url = "http://api.weatherapi.com/v1/current.json"
-    
+    # api_key = "21ce77d1d073431c87f181124232710"
+    # base_url = "http://api.weatherapi.com/v1/current.json"
+
+    api_key = "5c7a73ace0d65e545d96bc25182d0289"
+    base_url = "http://api.openweathermap.org/data/2.5/weather"
+    print("running weather")
     # Hardcoded for testing purposes
-    city = "London"  
+    city_name = "London"  
     unit = "c"  # 'c' for Celsius, 'f' for Fahrenheit
     weather_data={}
     if request.method == 'POST':
-        city = request.POST.get('city', city)
+        city_name = request.POST.get('city')
         unit = request.POST.get('unit', unit)
 
-    final_url = f"{base_url}?key={api_key}&q={city}"
+
+        # final_url = f"{base_url}?key={api_key}&q={city}"
+
+        # Step 1: Get latitude and longitude from city name
+        geocoding_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=1&appid={api_key}"
+        try:
+            geo_response = requests.get(geocoding_url)
+            geo_response.raise_for_status()  # This will check for HTTP errors
+            geo_data = geo_response.json()
+
+            if geo_data:
+                # Step 2: Get weather information using the latitude and longitude
+                lat = geo_data[0]['lat']
+                lon = geo_data[0]['lon']
+                print("lat",lat)
+                weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+                
+                weather_response = requests.get(weather_url)
+                weather_response.raise_for_status()
+                weather_data = weather_response.json()
+
+                weather_info = {
+                    "city": city_name.title(),
+                    "temperature": weather_data["main"]["temp"],
+                    "condition": weather_data["weather"][0]["description"],
+                    "icon": weather_data["weather"][0]["icon"],
+                    "condition_id": weather_data["weather"][0]["id"],
+                    "humidity": weather_data["main"]["humidity"]
+                }
+            else:
+                weather_info = {"error": "City not found."}
+        except requests.exceptions.HTTPError as e:
+            # If the city is not found or any other HTTP error occurred, inform the user.
+            messages.error(request, "Failed to retrieve weather data. Please try a different city.")
+
+    return render(request, "weather.html", {'weather_info': weather_info, 'unit': unit})
+
+# def weather(request):
+#     # api_key = "21ce77d1d073431c87f181124232710"
+#     # base_url = "http://api.weatherapi.com/v1/current.json"
+
+#     api_key = "5c7a73ace0d65e545d96bc25182d0289"
+#     base_url = "http://api.openweathermap.org/data/2.5/weather"
+
+#     # Hardcoded for testing purposes
+#     city_name = "London"  
+#     unit = "c"  # 'c' for Celsius, 'f' for Fahrenheit
+#     weather_data={}
+#     if request.method == 'POST':
+#         city_name = request.POST.get('city_name', city_name)
+#         unit = request.POST.get('unit', unit)
 
 
-    try:
-        response = requests.get(final_url)
-        response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
-        data = response.json()
+#         # final_url = f"{base_url}?key={api_key}&q={city}"
 
-        temperature = data["current"]["temp_c"] if unit == 'c' else data["current"]["temp_f"]
+#         # Step 1: Get latitude and longitude from city name
+#         geocoding_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=1&appid={api_key}"
+#         try:
+#             geo_response = requests.get(geocoding_url)
+#             geo_response.raise_for_status()  # This will check for HTTP errors
+#             geo_data = geo_response.json()
 
-        weather_data = {
-            "city": city,
-            "temperature": temperature,
-            "condition": data["current"]["condition"]["text"],
-            "icon": data["current"]["condition"]["icon"],
-            "unit": unit,
-        }
-    except requests.exceptions.HTTPError as e:
-        # If the city is not found or any other HTTP error occurred, inform the user.
-        messages.error(request, "Failed to retrieve weather data. Please try a different city.")
+#             if geo_data:
+#                 # Step 2: Get weather information using the latitude and longitude
+#                 lat = geo_data[0]['lat']
+#                 lon = geo_data[0]['lon']
 
-    return render(request, "weather.html", weather_data)
+#                 weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+                
+#                 weather_response = requests.get(weather_url)
+#                 weather_response.raise_for_status()
+#                 weather_data = weather_response.json()
 
+#                 weather_info = {
+#                     "city": city_name.title(),
+#                     "temperature": weather_data["main"]["temp"],
+#                     "condition": weather_data["weather"][0]["description"],
+#                     "icon": weather_data["weather"][0]["icon"],
+#                     "condition_id": weather_data["weather"][0]["id"]
+#                 }
+#             else:
+#                 weather_info = {"error": "City not found."}
+#         except requests.exceptions.HTTPError as e:
+#             # If the city is not found or any other HTTP error occurred, inform the user.
+#             messages.error(request, "Failed to retrieve weather data. Please try a different city.")
+
+#     return render(request, "weather.html", weather_data)
 
 # def get_user_city(request):
 #     ip_address = request.META.get("REMOTE_ADDR", None)
