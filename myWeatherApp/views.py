@@ -68,7 +68,8 @@ def weather(request):
                 "condition": weather_data["weather"][0]["description"],
                 "icon": weather_data["weather"][0]["icon"],
                 "condition_id": weather_data["weather"][0]["id"],
-                "humidity": weather_data["main"]["humidity"]
+                "humidity": weather_data["main"]["humidity"],
+                "wind_speed": weather_data["wind"]["speed"]
             }
         else:
             weather_info = {"error": "City not found."}

@@ -36,6 +36,8 @@
                 <img src="http://openweathermap.org/img/wn/{{ weather_info.icon }}.png" alt="weather icon">
                 <p>Condition ID: {{ weather_info.condition_id }}</p>
                 <p>Humidity: {{ weather_info.humidity }}%</p>
+
+                <p>Wind Speed: {{ weather_info.wind_speed }}{% if unit == 'metric' %} m/s{% else %} miles/h{% endif %}</p>
             {% endif %}
         </div>
     {% endif %}
