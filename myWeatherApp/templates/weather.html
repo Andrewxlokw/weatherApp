@@ -39,7 +39,18 @@
             {% endif %}
         </div>
     {% endif %}
-
+    
+    <!-- stores user preference   -->
+    {% if user.is_authenticated %}
+        <!-- Inside the user profile section -->
+        <form method="post" action="{% url 'set_preferred_city' %}">
+            {% csrf_token %}
+            <input type="text" name="preferred_city" placeholder="Set your preferred city" value="{{ user.userprofile.preferred_city }}">
+            <button type="submit">Save Preferred City</button>
+        </form>
+    {% else %}
+        <p>You must be logged in to save your preferred city.</p>
+    {% endif %}
     <script>
 
         // window.onload = function () {
