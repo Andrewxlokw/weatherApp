@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 
-class WeatherActivity(models.Model):
+class WeatherGroup(models.Model):
     WEATHER_CONDITION_GROUP_CODE  = [
         # not part of the weather code from openweathermap.org
         ('severe', 'Severe'),
@@ -34,8 +34,6 @@ class WeatherActivity(models.Model):
         # # Return a string representation of the model.
         # group_display = dict(WEATHER_CONDITION_GROUP_CODE).get(self.condition_group, "Unknown")
         # return f"{group_display} - {self.activity_recommendation}"
-
-# models.py
 
 
 

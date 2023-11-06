@@ -128,3 +128,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 IPINFO_ACCESS_TOKEN = "a04ad569ee8cfc"
 
 LOGIN_REDIRECT_URL = 'weather'
+
+ALLOWED_HOSTS = ['*']

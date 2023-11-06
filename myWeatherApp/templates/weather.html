@@ -9,13 +9,16 @@
 </head>
 
 <body>
-    {% if messages %}
+    
+    <!-- {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">
                 {{ message }}
             </div>
         {% endfor %}
-    {% endif %}
+    {% endif %} -->
+
+    <!-- prompt the user to choose the temperate unit -->
     <form method="post" action="{% url 'weather' %}">
         {% csrf_token %}
         <input type="text" name="city" placeholder="Enter city name" required>
@@ -24,10 +27,11 @@
         <button type="submit">Get Weather</button>
     </form>
     
+    <!-- Display the weather result -->
     {% if weather_info %}
-        <!-- Display weather data -->
         <div>
             <h1>Weather in {{ weather_info.city }}</h1>
+            <!-- alert the user if they have input an invalid city name -->
             {% if weather_info.error %}
                 <p>{{ weather_info.error }}</p>
             {% else %}
@@ -36,37 +40,30 @@
                 <img src="http://openweathermap.org/img/wn/{{ weather_info.icon }}.png" alt="weather icon">
                 <p>Condition ID: {{ weather_info.condition_id }}</p>
                 <p>Humidity: {{ weather_info.humidity }}%</p>
-
                 <p>Wind Speed: {{ weather_info.wind_speed }}{% if unit == 'metric' %} m/s{% else %} miles/h{% endif %}</p>
+                <p>Activity Recommendation: {{ weather_info.activity }}</p>
             {% endif %}
         </div>
     {% endif %}
     
-    <!-- stores user preference   -->
+    <!-- Allows the user to store the preference   -->
     {% if user.is_authenticated %}
-        <!-- Inside the user profile section -->
-        <form method="post" action="{% url 'set_preferred_city' %}">
+        <form method="post" action="{% url 'set_default_city' %}">
             {% csrf_token %}
-            <input type="text" name="preferred_city" placeholder="Set your preferred city" value="{{ user.userpreference.preferred_city }}">
-            <button type="submit">Save Preferred City</button>
+            <input type="text" name="default_city" placeholder="Set your default city" value="{{ user.userpreference.default_city }}">
+            <button type="submit">Save Default City</button>
         </form>
+    <!-- for debugging only, let the users know they havent login -->
     {% else %}
-        <p>You must be logged in to save your preferred city.</p>
+        <p>You need to login to save your default city.</p>
     {% endif %}
-    <script>
-
-        // window.onload = function () {
-        //     if (confirm("Do you want to share your IP address with us to detect your city?")) {
-        //         fetch('/location/')
-        //             .then(response => response.http())
-        //             .then(data => {
-        //                 let city = data.city;
-        //                 alert(`You are accessing from: ${city}`);
-        //             });
-        //     }
-        // }
-
-    </script>
+    
+    <!-- alert the user about the weather   -->
+    {% if condition_group == 'severe' %}
+        <div class="alert alert-danger" role="alert">
+            Severe weather warning!!!
+        </div>
+    {% endif %}
 </body>
 
 </html>
