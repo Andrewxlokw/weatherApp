@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "myWeatherApp",
     "ipinfo_django",
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "ipinfo_django.middleware.IPinfoMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -130,3 +132,5 @@ IPINFO_ACCESS_TOKEN = "a04ad569ee8cfc"
 LOGIN_REDIRECT_URL = 'weather'
 
 ALLOWED_HOSTS = ['*']
+
+CORS_ALLOW_ALL_ORIGINS = True
