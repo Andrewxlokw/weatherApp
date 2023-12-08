@@ -39,6 +39,7 @@
         </div>
     {% endif %}
     
+    
     <!-- Allows the user to store the preference   -->
     {% if user.is_authenticated %}
         <form method="post" action="{% url 'set_default_city' %}">
