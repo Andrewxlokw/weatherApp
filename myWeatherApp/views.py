@@ -92,7 +92,7 @@ def check_login_status(request):
     return JsonResponse({'is_logged_in': request.user.is_authenticated})
 
 
-# change name
+
 @api_view(['POST'])
 def my_login(request):
     username = request.data.get('username')
@@ -107,14 +107,13 @@ def my_login(request):
         return Response({'success': False}, status = 400)
     
 
-@csrf_exempt
+
 @api_view(['POST'])
 def api_logout(request):
     logout(request)
     return Response({'success': True})
 
 
-@csrf_exempt
 @login_required
 @api_view(['POST'])
 def set_default_city(request: HttpRequest) -> JsonResponse:
